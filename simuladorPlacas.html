@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Gerador de Placa de Carro</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+    h1 {
+      color: #333;
+    }
+    #placa {
+      font-size: 2em;
+      font-weight: bold;
+      color: #fff;
+      background: #333;
+      padding: 15px 30px;
+      border-radius: 8px;
+      margin-top: 20px;
+      letter-spacing: 5px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>Gerador de Placa de Veículo</h1>
+  <div id="placa">---</div>
+  <button onclick="gerarPlaca()">Gerar Placa</button>
+
+  <script>
+    function gerarPlaca() {
+      const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      const numeros = "0123456789";
+
+      // Escolhe aleatoriamente entre formato antigo ou Mercosul
+      const formato = Math.random() < 0.5 ? "antigo" : "mercosul";
+
+      let placa = "";
+
+      if (formato === "antigo") {
+        // Formato antigo: AAA-1234
+        let parteLetras = "";
+        let parteNumeros = "";
+        for (let i = 0; i < 3; i++) {
+          parteLetras += letras.charAt(Math.floor(Math.random() * letras.length));
+        }
+        for (let i = 0; i < 4; i++) {
+          parteNumeros += numeros.charAt(Math.floor(Math.random() * numeros.length));
+        }
+        placa = parteLetras + "-" + parteNumeros;
+      } else {
+        // Formato Mercosul: AAA1A23
+        let parteLetras1 = "";
+        for (let i = 0; i < 3; i++) {
+          parteLetras1 += letras.charAt(Math.floor(Math.random() * letras.length));
+        }
+        let numero1 = numeros.charAt(Math.floor(Math.random() * numeros.length));
+        let letraCentral = letras.charAt(Math.floor(Math.random() * letras.length));
+        let numero2 = numeros.charAt(Math.floor(Math.random() * numeros.length));
+        let numero3 = numeros.charAt(Math.floor(Math.random() * numeros.length));
+
+        placa = parteLetras1 + numero1 + letraCentral + numero2 + numero3;
+      }
+
+      document.getElementById("placa").textContent = placa;
+    }
+  </script>
+</body>
+</html>
+

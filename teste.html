@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Sistema de Estacionamento</title>
+  <!-- CSS da View -->
+  <link rel="stylesheet" href="View/css/estilo.css">
+</head>
+<body>
+  <h2>Sistema de Estacionamento Inteligente com Vagas Baseadas no Tamanho do Veículo</h2>
+
+  <div id="controles">
+    <input type="text" id="placa" placeholder="Placa">
+    <button onclick="Controller.estacionar()">Estacionar</button>
+    <button onclick="Controller.liberar()">Liberar</button>
+  </div>
+
+  <div id="grid"></div>
+
+  <!-- Importando Model, View e Controller -->
+  <script src="Model/model.js"></script>
+  <script src="View/view.js"></script>
+  <script src="Controller/controller.js"></script>
+
+  <!-- Inicialização -->
+  <script>
+    Controller.init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+    body { 
+      font-family: Arial, sans-serif; 
+      margin: 20px; 
+      background: #858585; /* fundo cinza */
+      text-align: left;
+    }
+    h2 { color: #333; text-align: center; }
+
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(6, auto); /* 4 colunas */
+      grid-gap: 20px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    #controles {
+      text-align: center;
+    }
+
+    .vaga {
+      position: relative;
+      border: 3px dashed #ccc;
+      border-radius: 10px;
+      background: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      transition: all 0.3s ease-in-out;
+    }
+
+    /* Diferentes tamanhos */
+    .vaga.pequena {
+      width: 100px;
+      height: 160px;
+    }
+
+    .vaga.media {
+      width: 140px;
+      height: 200px;
+    }
+
+    .vaga.grande {
+      width: 180px;
+      height: 240px;
+    }
+
+    /* Efeito vaga liberada */
+    .vaga.liberada {
+      border: 3px solid green;
+      animation: piscar 1.5s infinite;
+    }
+
+    @keyframes piscar {
+      0% { box-shadow: 0 0 5px green; }
+      50% { box-shadow: 0 0 15px green; }
+      100% { box-shadow: 0 0 5px green; }
+    }
+
+    /* Efeito vaga ocupada */
+    .vaga.ocupada {
+      border: 3px solid red;
+      background: #f1f1f1;
+    }
+
+    .vaga-label {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.7);
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+
+    img {
+      max-width: 90%;
+      max-height: 90%;
+    }

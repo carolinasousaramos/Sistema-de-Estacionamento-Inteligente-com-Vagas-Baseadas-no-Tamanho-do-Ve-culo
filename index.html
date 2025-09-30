@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Sistema de Estacionamento</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      margin: 20px; 
+      background: #858585; /* fundo cinza */
+      text-align: left;
+    }
+    h2 { color: #333; text-align: center; }
+
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(6, auto); /* 4 colunas */
+      grid-gap: 20px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    #controles {
+      text-align: center;
+    }
+
+    .vaga {
+      position: relative;
+      border: 3px dashed #ccc;
+      border-radius: 10px;
+      background: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      transition: all 0.3s ease-in-out;
+    }
+
+    /* Diferentes tamanhos */
+    .vaga.pequena {
+      width: 100px;
+      height: 160px;
+    }
+
+    .vaga.media {
+      width: 140px;
+      height: 200px;
+    }
+
+    .vaga.grande {
+      width: 180px;
+      height: 240px;
+    }
+
+    /* Efeito vaga liberada */
+    .vaga.liberada {
+      border: 3px solid green;
+      animation: piscar 1.5s infinite;
+    }
+
+    @keyframes piscar {
+      0% { box-shadow: 0 0 5px green; }
+      50% { box-shadow: 0 0 15px green; }
+      100% { box-shadow: 0 0 5px green; }
+    }
+
+    /* Efeito vaga ocupada */
+    .vaga.ocupada {
+      border: 3px solid red;
+      background: #f1f1f1;
+    }
+
+    .vaga-label {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.7);
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+
+    img {
+      max-width: 90%;
+      max-height: 90%;
+    }
+  </style>
+</head>
+<body>
+  <h2>Sistema de Estacionamento Inteligente com Vagas Baseadas no Tamanho do Veículo</h2>
+
+  <div id="controles">
+    <input type="text" id="placa" placeholder="Placa">
+    <button onclick="estacionar()">Estacionar</button>
+    <button onclick="liberar()">Liberar</button>
+  </div>
+  <div id="grid"></div>
+
+  <script>
+  const API_KEY = "108b10d073339c6e4c056aba773db898"; 
+  const API_URL = "https://placas.fipeapi.com.br/placas/";
+
+  class Veiculo {
+    constructor(placa, tipo) {
+      this.placa = placa;
+      this.tipo = tipo;
+      this.entrada = new Date();
+      this.saida = null;
+    }
+  }
+
+  class Vaga {
+    constructor(id, tamanho) {
+      this.id = id;
+      this.tamanho = tamanho; 
+      this.ocupada = false;
+      this.veiculo = null;
+    }
+    ocupar(veiculo) {
+      this.ocupada = true;
+      this.veiculo = veiculo;
+    }
+    liberar() {
+      this.ocupada = false;
+      this.veiculo = null;
+    }
+  }
+
+  class Estacionamento {
+    constructor(vagas) {
+      this.vagas = vagas;
+    }
+    podeEstacionar(veiculo, vaga) {
+      if (vaga.ocupada) return false;
+      if (veiculo.tipo === "Moto" && vaga.tamanho === "pequena") return true;
+      if (veiculo.tipo === "Hatch" && vaga.tamanho === "media") return true;
+      if (["Suv", "Caminhonete"].includes(veiculo.tipo) && vaga.tamanho === "grande") return true;
+      return false;
+    }
+    estacionar(veiculo) {
+      for (let vaga of this.vagas) {
+        if (this.podeEstacionar(veiculo, vaga)) {
+          vaga.ocupar(veiculo);
+          alert(`Veículo ${veiculo.placa} (${veiculo.tipo}) estacionado na vaga ${vaga.id}`);
+          render();
+          return;
+        }
+      }
+      alert("Nenhuma vaga disponível para este veículo.");
+    }
+    liberar(placa) {
+      for (let vaga of this.vagas) {
+        if (vaga.ocupada && vaga.veiculo.placa === placa) {
+          vaga.veiculo.saida = new Date();
+          let tempo = Math.floor((vaga.veiculo.saida - vaga.veiculo.entrada) / 60000);
+          alert(`Veículo ${placa} saiu. Tempo: ${tempo} min`);
+          vaga.liberar();
+          render();
+          return;
+        }
+      }
+      alert("Veículo não encontrado.");
+    }
+  }
+
+  // Criando 12 vagas (em vez de 8)
+  let vagas = [
+    new Vaga(1, "pequena"), new Vaga(2, "pequena"), new Vaga(3, "media"),
+    new Vaga(4, "media"), new Vaga(5, "media"), new Vaga(6, "media"),
+    new Vaga(7, "media"), new Vaga(8, "grande"), new Vaga(9, "grande"),
+    new Vaga(10, "grande"), new Vaga(11, "grande"), new Vaga(12, "grande"),
+  ];
+  let estacionamento = new Estacionamento(vagas);
+
+  // 🔑 Função usando API
+  async function estacionar() {
+    let placa = document.getElementById("placa").value.trim();
+    if (!placa) { alert("Informe a placa!"); return; }
+
+    try {
+      let response = await fetch(`${API_URL}${placa}?key=${API_KEY}`);
+      if (!response.ok) throw new Error("Erro ao consultar API");
+      let result = await response.json();
+
+      let veiculoData = result.data?.veiculo;
+      if (!veiculoData) {
+        alert("Não foi possível obter dados do veículo.");
+        return;
+      }
+      console.log(result);
+
+      let tipo = "carro"; 
+      if (veiculoData.tipo_carroceria) {
+        if (/hatch/i.test(veiculoData.tipo_carroceria)) tipo = "Hatch";
+        else if (/suv/i.test(veiculoData.tipo_carroceria)) tipo = "Suv";
+        else if (/caminhonete|pickup/i.test(veiculoData.tipo_carroceria)) tipo = "caminhonete";
+        else if (/moto/i.test(veiculoData.tipo_carroceria)) tipo = "Moto";
+        else if (/sedan/i.test(veiculoData.tipo_carroceria)) tipo = "carro";
+      }
+
+      let veiculo = new Veiculo(placa, tipo);
+      estacionamento.estacionar(veiculo);
+
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao buscar dados do veículo.");
+    }
+  }
+
+  function liberar() {
+    let placa = document.getElementById("placa").value.trim();
+    if (!placa) { alert("Informe a placa!"); return; }
+    estacionamento.liberar(placa);
+  }
+
+  function render() {
+    let grid = document.getElementById("grid");
+    grid.innerHTML = "";
+    estacionamento.vagas.forEach(vaga => {
+      let div = document.createElement("div");
+      div.className = `vaga ${vaga.tamanho}`;
+      div.classList.add(vaga.ocupada ? "ocupada" : "liberada");
+
+      let label = document.createElement("div");
+      label.className = "vaga-label";
+      div.appendChild(label);
+
+      if (vaga.ocupada) {
+        let img = document.createElement("img");
+        if (vaga.veiculo.tipo === "Moto") img.src = "img/moto.jpeg";
+        else if (vaga.veiculo.tipo === "Hatch") img.src = "img/hatch.jpeg";
+        else if (vaga.veiculo.tipo === "Suv") img.src = "img/suv.jpeg";
+        else if (vaga.veiculo.tipo === "Caminhonete") img.src = "img/caminhonete.jpeg";
+        else img.src = "img/carro_tamanho_p.png";
+        div.appendChild(img);
+      }
+
+      grid.appendChild(div);
+    });
+  }
+
+  render();
+  </script>
+</body>
+</html>
