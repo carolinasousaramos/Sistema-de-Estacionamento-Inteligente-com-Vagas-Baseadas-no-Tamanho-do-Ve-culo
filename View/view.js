@@ -14,7 +14,7 @@ const View = {
         else if (vaga.veiculo.tipo === "Hatch") img.src = "../img/hatch.jpeg";
         else if (vaga.veiculo.tipo === "Suv") img.src = "../img/suv.jpeg";
         else if (vaga.veiculo.tipo === "Caminhonete") img.src = "../img/caminhonete.jpeg";
-        else img.src = "../img/carro_tamanho_p.png";
+        else img.src = "../img/vaga_padrao.jpeg";
         div.appendChild(img);
         let label = document.createElement("div");
         label.className = "vaga-label";

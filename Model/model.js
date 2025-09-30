@@ -34,6 +34,7 @@ class Estacionamento {
     if (veiculo.tipo === "Moto" && vaga.tamanho === "pequena") return true;
     if (veiculo.tipo === "Hatch" && vaga.tamanho === "media") return true;
     if (["Suv", "Caminhonete"].includes(veiculo.tipo) && vaga.tamanho === "grande") return true;
+    if (veiculo.tipo === "carro" && vaga.tamanho === "grande") return true;
     return false;
   }
   estacionar(veiculo) {
